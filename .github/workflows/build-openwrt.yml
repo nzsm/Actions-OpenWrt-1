@@ -160,6 +160,7 @@ jobs:
       run: |
         mv -f build/AutoUpdate/Check_Update.sh openwrt/package/luci-app-autoupdate/root/usr/share/autoupdate/Check_Update.sh
         mv build/AutoUpdate/AutoUpdate.sh openwrt/package/base-files/files/bin
+        cd openwrt
         chmod +x build/AutoUpdate/AutoUpdate1.sh
         source build/AutoUpdate/AutoUpdate1.sh && AutoUpdate1
     - name: 下载软件包

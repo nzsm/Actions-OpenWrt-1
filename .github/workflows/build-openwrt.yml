@@ -93,7 +93,6 @@ jobs:
         sudo timedatectl set-timezone "$TZ"
         sudo mkdir -p /workdir
         sudo chown $USER:$GROUPS /workdir
-
     - name: 下载${{matrix.target}}源码
       working-directory: /workdir
       run: |
@@ -121,6 +120,7 @@ jobs:
         fi
         if [ ${{matrix.target}} != openwrt ]; then
           git clone -b $REPO_BRANCH --single-branch https://github.com/281677160/openwrt-package package/danshui
+          git clone https://github.com/Hyy2001X/luci-app-autoupdate.git package/luci-app-autoupdate
         fi
         ./scripts/feeds clean && ./scripts/feeds update -a && ./scripts/feeds install -a && ./scripts/feeds install -a
         if [ -f "build/${{matrix.target}}/$DIY_P2_SH" ]; then
@@ -155,6 +155,13 @@ jobs:
         TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
         TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
 
+
+    - name: 运行自动更新脚本1
+      run: |
+        mv -f build/AutoUpdate/Check_Update.sh openwrt/package/luci-app-autoupdate/root/usr/share/autoupdate/Check_Update.sh
+        mv build/AutoUpdate/AutoUpdate.sh openwrt/package/base-files/files/bin
+        chmod +x build/AutoUpdate/AutoUpdate1.sh
+        source build/AutoUpdate/AutoUpdate1.sh && AutoUpdate1
     - name: 下载软件包
       id: package
       run: |
@@ -162,7 +169,6 @@ jobs:
         make download -j8
         find dl -size -1024c -exec ls -l {} \;
         find dl -size -1024c -exec rm -f {} \;
-    
     - name: 开始编译固件
       id: compile
       run: |
@@ -172,8 +178,7 @@ jobs:
         echo "::set-output name=status::success"
         echo "date=$(date "+%Y-%m-%d %H.%M")" >> $GITHUB_ENV
         echo "date1=$(date "+%Y年%m月%d号-%H点%M分")" >> $GITHUB_ENV
-        echo "date2=$(date "+%Y%m%d-%H%M")" >> $GITHUB_ENV
-
+        echo "date2=$(date "+%Y%m%d)" >> $GITHUB_ENV
     - name: 上传bin文件夹(固件+ipk)在github空间
       uses: actions/upload-artifact@v2
       if: steps.compile.outputs.status == 'success' && env.UPLOAD_BIN_DIR == 'true'
@@ -200,7 +205,11 @@ jobs:
            cd ../../
            mv -f reform/out/*/*.img.gz openwrt/bin/targets/armvirt/*
         fi
-    
+    - name: 运行自动更新脚本2
+      run: |
+        cd openwrt
+          chmod +x build/AutoUpdate/AutoUpdate1.sh
+          source build/AutoUpdate/AutoUpdate1.sh && AutoUpdate2 
     - name: 整理固件文件夹
       id: organizer
       run: |
@@ -260,7 +269,7 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.REPO_TOKEN }}
       with:
-        name: ${{ env.date1 }} 「 ${{ env.WXFB_MESSAGE }} 」固件
+        name: ${{ env.date1 }} 
         tag_name: ${{ env.date2 }}
         body: |            
             ☆  源码 : ${{ env.REPO_URL }}

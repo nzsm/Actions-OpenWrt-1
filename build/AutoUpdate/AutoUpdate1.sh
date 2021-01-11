@@ -5,22 +5,17 @@
 
 GET_TARGET_INFO() {
 Author=dhxh
-Default_Device=$TARGET_PROFILE
-
-[ -e $GITHUB_WORKSPACE/Openwrt.info ] && . $GITHUB_WORKSPACE/Openwrt.info
 AutoUpdate_Version=$(awk 'NR==6' package/base-files/files/bin/AutoUpdate.sh | awk -F '[="]+' '/Version/{print $2}')
-if [ $TARGET_BOARD-64 == x86-64 ];then
-Device="$TARGET_BOARD-$TARGET_SUBTARGET"
-else  
-Device="$TARGET_PROFILE"
-fi
-Openwrt_Device="$Device"
-Compile_Date=$(date +%Y%m%d-%H%M)
-Openwrt_Version="$Compile_Date"
 TARGET_PROFILE=$(egrep -o "CONFIG_TARGET.*DEVICE.*=y" .config | sed -r 's/.*DEVICE_(.*)=y/\1/')
-[ -z "$TARGET_PROFILE" ] && TARGET_PROFILE="$Default_Device"
 TARGET_BOARD=$(awk -F '[="]+' '/TARGET_BOARD/{print $2}' .config)
 TARGET_SUBTARGET=$(awk -F '[="]+' '/TARGET_SUBTARGET/{print $2}' .config)
+if [ $TARGET_BOARD-64 == x86-64 ];then
+Openwrt_Device="$TARGET_BOARD-$TARGET_SUBTARGET"
+else  
+Openwrt_Device="$TARGET_PROFILE"
+fi
+Compile_Date=$(date +%Y%m%d-%H%M)
+Openwrt_Version="$Compile_Date"
 }
 
 AutoUpdate1() {
@@ -46,7 +41,7 @@ case "$Device" in
     AutoBuild_Firmware=openwrt-$TARGET_PROFILE-${Openwrt_Version}.bin
     ;;
     "x86-64")
-    Default_Firmware=openwrt-$TARGET_BOARD-$TARGET_PROFILE-combined.img.gz
+    Default_Firmware=openwrt-$TARGET_BOARD-$TARGET_PROFILE-squashfs.img.gz
     AutoBuild_Firmware=openwrt-$TARGET_BOARD-$TARGET_PROFILE-${Openwrt_Version}.img.gz
     ;;
 esac

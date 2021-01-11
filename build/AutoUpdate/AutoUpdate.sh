@@ -4,7 +4,7 @@
 # AutoUpdate for Openwrt
 
 Version=V4.8
-Github=https://github.com/281677160/Actions-OpenWrt
+Github=https://github.com/dhxh/OpenwrtBuild
 Build_Date=$(cat /tmp/Github_Tags | egrep -o "${Github}/releases/tag/[0-9]+.[0-9]+" | awk 'END {print}')
 Updaet_Date="${Build_Date#*tag/}"
 DEFAULT_DEVICE=$(jsonfilter -e '@.model.id' < "/etc/board.json" | tr ',' '_')

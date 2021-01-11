@@ -163,6 +163,7 @@ jobs:
         chmod +x build/AutoUpdate/AutoUpdate1.sh
         cd openwrt
         source $GITHUB_WORKSPACE/build/AutoUpdate/AutoUpdate1.sh && AutoUpdate1
+    
     - name: 下载软件包
       id: package
       run: |
@@ -209,8 +210,7 @@ jobs:
     - name: 运行自动更新脚本2
       run: |
         cd openwrt
-          chmod +x build/AutoUpdate/AutoUpdate1.sh
-          source build/AutoUpdate/AutoUpdate1.sh && AutoUpdate2 
+        source $GITHUB_WORKSPACE/build/AutoUpdate/AutoUpdate1.sh && AutoUpdate2 
     - name: 整理固件文件夹
       id: organizer
       run: |

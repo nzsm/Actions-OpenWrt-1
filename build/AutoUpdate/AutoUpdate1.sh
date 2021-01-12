@@ -4,7 +4,7 @@
 # AutoBuild Actions
 
 GET_TARGET_INFO() {
-Author=dhxh
+Author=281677160
 AutoUpdate_Version=$(awk 'NR==6' package/base-files/files/bin/AutoUpdate.sh | awk -F '[="]+' '/Version/{print $2}')
 TARGET_PROFILE=$(egrep -o "CONFIG_TARGET.*DEVICE.*=y" .config | sed -r 's/.*DEVICE_(.*)=y/\1/')
 TARGET_BOARD=$(awk -F '[="]+' '/TARGET_BOARD/{print $2}' .config)
@@ -42,6 +42,10 @@ case "$Device" in
     ;;
     "x86-64")
     Default_Firmware=openwrt-$TARGET_BOARD-$TARGET_PROFILE-squashfs.img.gz
+    AutoBuild_Firmware=openwrt-$TARGET_BOARD-$TARGET_PROFILE-${Openwrt_Version}.img.gz
+    ;;
+    "x86-64")
+    Default_Firmware=openwrt-$TARGET_BOARD-$TARGET_PROFILE-combined.img.gz
     AutoBuild_Firmware=openwrt-$TARGET_BOARD-$TARGET_PROFILE-${Openwrt_Version}.img.gz
     ;;
 esac

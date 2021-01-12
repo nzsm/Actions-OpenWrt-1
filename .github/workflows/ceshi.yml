@@ -265,14 +265,14 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.REPO_TOKEN }}
       with:
-        name: ${{ env.date1 }} 「 ${{ env.WXFB_MESSAGE }} 」固件
+        name: ${{ env.date1 }} 「 ${{ env.DEVICE_NAME }}${{ env.DEVICE1_NAME }} 」固件
         tag_name: ${{ env.date2 }}
         body: |            
             ☆  源码 : ${{ env.REPO_URL }}
             ☆  分支 : ${{ env.REPO_BRANCH }}
             ☆  感谢源码作者无私分享！
             
-            🎉 [ ${{ env.WXFB_MESSAGE }} ]固件下载 ✨
+            🎉 [ ${{ env.DEVICE_NAME }}${{ env.DEVICE1_NAME }} ]固件下载 ✨
             
             💐 奶牛快传(国内高速🚀下载)： ${{ env.COWTRANSFER_URL }}
             

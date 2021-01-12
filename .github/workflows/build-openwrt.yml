@@ -93,7 +93,6 @@ jobs:
         sudo timedatectl set-timezone "$TZ"
         sudo mkdir -p /workdir
         sudo chown $USER:$GROUPS /workdir
-    
     - name: 下载${{matrix.target}}源码
       working-directory: /workdir
       run: |
@@ -118,10 +117,6 @@ jobs:
         if [ -f "build/${{matrix.target}}/$DIY_P1_SH" ]; then
           chmod +x build/${{matrix.target}}/$DIY_P1_SH
           /bin/bash "build/${{matrix.target}}/$DIY_P1_SH"
-        fi
-        if [ ${{matrix.target}} != openwrt ]; then
-          git clone -b $REPO_BRANCH --single-branch https://github.com/281677160/openwrt-package package/danshui
-          git clone https://github.com/Hyy2001X/luci-app-autoupdate.git package/luci-app-autoupdate
         fi
         ./scripts/feeds clean && ./scripts/feeds update -a && ./scripts/feeds install -a && ./scripts/feeds install -a
         if [ -f "build/${{matrix.target}}/$DIY_P2_SH" ]; then
@@ -148,7 +143,13 @@ jobs:
         pushd po2lmo
         make && sudo make install
         popd
- 
+    - name: 运行自动更新脚本1
+      run: |
+        cd openwrt
+        mv -f build/AutoUpdate/Check_Update.sh package/luci-app-autoupdate/root/usr/share/autoupdate/Check_Update.sh
+        mv build/AutoUpdate/AutoUpdate.sh package/base-files/files/bin
+        chmod +x build/AutoUpdate/AutoUpdate1.sh
+        source build/AutoUpdate/AutoUpdate1.sh && AutoUpdate1
     - name: SSH远程连接（若2分钟还展开不了,请看《SSH连接教程》）
       uses: 281677160/debugger-action@master
       if: env.SSH_ACTIONS == 'true' || (github.event.inputs.ssh == 'ssh' && github.event.inputs.ssh  != 'false')
@@ -156,15 +157,6 @@ jobs:
         TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
         TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
 
-
-    - name: 运行自动更新脚本1
-      run: |
-        mv -f build/AutoUpdate/Check_Update.sh openwrt/package/luci-app-autoupdate/root/usr/share/autoupdate/Check_Update.sh
-        mv build/AutoUpdate/AutoUpdate.sh openwrt/package/base-files/files/bin
-        chmod +x build/AutoUpdate/AutoUpdate1.sh
-        cd openwrt
-        source $GITHUB_WORKSPACE/build/AutoUpdate/AutoUpdate1.sh && AutoUpdate1
-    
     - name: 下载软件包
       id: package
       run: |
@@ -181,7 +173,7 @@ jobs:
         echo "::set-output name=status::success"
         echo "date=$(date "+%Y-%m-%d %H.%M")" >> $GITHUB_ENV
         echo "date1=$(date "+%Y年%m月%d号-%H点%M分")" >> $GITHUB_ENV
-        echo "date2=$(date "+%Y%m%d)" >> $GITHUB_ENV
+        echo "date2=$(date "+%Y%m%d")" >> $GITHUB_ENV
     - name: 上传bin文件夹(固件+ipk)在github空间
       uses: actions/upload-artifact@v2
       if: steps.compile.outputs.status == 'success' && env.UPLOAD_BIN_DIR == 'true'
@@ -211,7 +203,7 @@ jobs:
     - name: 运行自动更新脚本2
       run: |
         cd openwrt
-        source $GITHUB_WORKSPACE/build/AutoUpdate/AutoUpdate1.sh && AutoUpdate2 
+          source build/AutoUpdate/AutoUpdate1.sh && AutoUpdate2 
     - name: 整理固件文件夹
       id: organizer
       run: |

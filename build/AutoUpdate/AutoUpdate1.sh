@@ -41,7 +41,7 @@ case "$Device" in
     AutoBuild_Firmware=openwrt-$TARGET_PROFILE-${Openwrt_Version}.bin
     ;;
     "x86-64")
-    Default_Firmware=openwrt-$TARGET_BOARD-$TARGET_PROFILE-combined.img.gz
+    Default_Firmware=openwrt-$TARGET_BOARD-$TARGET_PROFILE-squashfs.img.gz
     AutoBuild_Firmware=openwrt-$TARGET_BOARD-$TARGET_PROFILE-${Openwrt_Version}.img.gz
     ;;
 esac

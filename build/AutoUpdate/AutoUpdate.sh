@@ -4,7 +4,7 @@
 # AutoUpdate for Openwrt
 
 Version=V4.8
-Github=https://github.com/281677160/Actions-OpenWrt
+Github=https://github.com/dhxh/OpenwrtBuild
 Build_Date=$(cat /tmp/Github_Tags | egrep -o "${Github}/releases/tag/[0-9]+.[0-9]+" | awk 'END {print}')
 Updaet_Date="${Build_Date#*tag/}"
 DEFAULT_DEVICE=$(jsonfilter -e '@.model.id' < "/etc/board.json" | tr ',' '_')
@@ -15,7 +15,7 @@ TIME() {
 Github_Download=${Github}/releases/download/${Updaet_Date}
 Author=${Github##*com/}
 [[ -z ${Author} ]] && echo "固件作者信息获取失败!" && exit
-Github_Tags=https://api.github.com/repos/${Author}/releases/latest
+Github_Tags=https://api.github.com/repos/${Author}/releases
 cd /etc
 CURRENT_VERSION=$(awk 'NR==1' /etc/openwrt_info)
 CURRENT_DEVICE=$(awk 'NR==1' /etc/openwrt_device)
@@ -147,9 +147,9 @@ if [[ ! ${Force_Update} == 1 ]];then
 		fi
 	fi
 fi
-Firmware_Info="${GET_FullVersion}"
-Firmware="${Firmware_Info}"
-Firmware_Detail="${Firmware_Info}.detail"
+
+Firmware="${GET_FullVersion}"
+Firmware_Detail="openwrt-${CURRENT_DEVICE}-${GET_Version}.detail"
 echo -e "\n云端固件名称: ${Firmware}"
 echo "固件下载地址: ${Github_Download}"
 Disk_List="/tmp/disk_list"
